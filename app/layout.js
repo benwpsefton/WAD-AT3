@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import "./globals.css";
+import LogoutButton from "./components/LogoutButton";
 
 const navigation_links = [
   { href: "/", label: "Home" },
@@ -64,6 +65,7 @@ export default function RootLayout({ children }) {
                     {link.label}
                   </Link>
                 ))}
+                <LogoutButton></LogoutButton>
               </div>
             </nav>
           </div>
