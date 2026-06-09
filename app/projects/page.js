@@ -208,6 +208,12 @@ export default function ProjectsPage() {
                       >
                         Delete
                       </button>
+                      <Link
+                        href={`/projects/${project.id}/tasks`}
+                        className="text-sm font-medium text-teal-700 hover:text-teal-900"
+                      >
+                        View tasks →
+                      </Link>
                     </div>
                   </div>
                 ))
