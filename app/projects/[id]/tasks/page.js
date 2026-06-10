@@ -12,29 +12,37 @@ export default function ProjectTasksPage() {
 
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [checklists, setChecklists] = useState([]);
 
   useEffect(() => {
     if (!id) return;
 
-    async function fetchTasks() {
+    async function fetchData() {
       try {
         setLoading(true);
 
-        const res = await api.getCached(`/tasks/projects/${id}`);
+        const [tasksRes, checklistRes] = await Promise.all([
+          api.getCached(`/tasks/projects/${id}`),
+          api.getCached("/checklist-items"),
+        ]);
 
-        const data = Array.isArray(res.data) ? res.data : [];
-
-        setTasks(data);
+        setTasks(Array.isArray(tasksRes.data) ? tasksRes.data : []);
+        setChecklists(Array.isArray(checklistRes.data) ? checklistRes.data : []);
       } catch (err) {
-        console.error("Failed to fetch tasks:", err);
+        console.error("Failed to fetch data:", err);
         setTasks([]);
+        setChecklists([]);
       } finally {
         setLoading(false);
       }
     }
 
-    fetchTasks();
+    fetchData();
   }, [id]);
+
+  const getChecklistForTask = (taskId) => {
+    return checklists.filter((item) => item.task_id === taskId);
+  };
 
   return (
     <ProtectedPage>
@@ -68,42 +76,66 @@ export default function ProjectTasksPage() {
           </div>
         ) : (
           <div className="grid gap-4 md:grid-cols-3">
-            {tasks.map((task) => (
-              <div key={task.id} className="surface-card rounded-[1rem] p-5">
-                
-                <h3 className="text-lg font-semibold text-slate-950">
-                  {task.name}
-                </h3>
+            {tasks.map((task) => {
+              const taskChecklist = getChecklistForTask(task.id);
 
-                <p className="mt-2 text-sm leading-6 text-slate-600">
-                  {task.description}
-                </p>
+              return (
+                <div key={task.id} className="surface-card rounded-[1rem] p-5">
+                  <h3 className="text-lg font-semibold text-slate-950">
+                    {task.name}
+                  </h3>
 
-                <div className="mt-4">
-                  <span
-                    className={`inline-block rounded-full px-3 py-1 text-xs font-medium
-                      ${
-                        task.status === "done"
-                          ? "bg-emerald-100 text-emerald-700"
-                          : task.status === "in_progress"
-                          ? "bg-amber-100 text-amber-700"
-                          : "bg-slate-100 text-slate-700"
-                      }`}
-                  >
-                    {task.status}
-                  </span>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">
+                    {task.description}
+                  </p>
+
+                  <div className="mt-4">
+                    <span
+                      className={`inline-block rounded-full px-3 py-1 text-xs font-medium
+                        ${
+                          task.status === "done"
+                            ? "bg-emerald-100 text-emerald-700"
+                            : task.status === "in_progress"
+                            ? "bg-amber-100 text-amber-700"
+                            : "bg-slate-100 text-slate-700"
+                        }`}
+                    >
+                      {task.status}
+                    </span>
+                  </div>
+
+                  <p className="mt-4 text-xs text-slate-500">
+                    Project: {task.project?.name}
+                  </p>
+
+                  {taskChecklist.length > 0 && (
+                    <div className="mt-4 space-y-2">
+                      <p className="text-xs font-semibold text-slate-600">
+                        Checklist
+                      </p>
+
+                      {taskChecklist.map((item) => (
+                        <div
+                          key={item.id}
+                          className="flex items-center gap-2 text-sm"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={item.completed === 1}
+                            readOnly
+                          />
+                          <span>{item.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="mt-6 gap-4">
+                    <Comments id={task.id} type="Task" />
+                  </div>
                 </div>
-
-                <p className="mt-4 text-xs text-slate-500">
-                  Project: {task.project?.name}
-                </p>
-                
-                <div className="mt-6 gap-4">
-                  <Comments id={task.id} type="Task" />
-                </div>
-
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </section>
