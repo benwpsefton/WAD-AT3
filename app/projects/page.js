@@ -41,7 +41,7 @@ export default function ProjectsPage() {
 
       for (const project of projects) {
         try {
-          const res = await api.get(`/tasks/projects/${project.id}`);
+          const res = await api.getCached(`/tasks/projects/${project.id}`);
           counts[project.id] = Array.isArray(res.data)
             ? res.data.length
             : 0;

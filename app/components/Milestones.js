@@ -11,7 +11,7 @@ export default function Milestones({ projectId }) {
   useEffect(() => {
     async function fetchMilestones() {
       try {
-        const res = await api.get("/milestones");
+        const res = await api.getCached("/milestones");
 
         const filtered = res.data.filter(
           (m) => m.project?.id === projectId

@@ -8,7 +8,7 @@ import Milestones from "@/app/components/Milestones";
 
 async function getProject(id) {
   try {
-    const res = await api.get(`/projects/${id}`);
+    const res = await api.getCached(`/projects/${id}`);
     return res.data.data || res.data;
   } catch (error) {
     if (error.response?.status === 404) {
@@ -103,7 +103,7 @@ export async function generateStaticParams() {
     return [];
   }
   try {
-    const res = await api.get("/projects");
+    const res = await api.getCached("/projects");
     const projects = res.data.data || res.data || [];
     return projects
       .filter((project) => project?.id)

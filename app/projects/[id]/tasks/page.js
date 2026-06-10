@@ -20,7 +20,7 @@ export default function ProjectTasksPage() {
       try {
         setLoading(true);
 
-        const res = await api.get(`/tasks/projects/${id}`);
+        const res = await api.getCached(`/tasks/projects/${id}`);
 
         const data = Array.isArray(res.data) ? res.data : [];
 

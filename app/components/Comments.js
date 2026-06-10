@@ -11,7 +11,7 @@ export default function Comments({ id, type }) {
   useEffect(() => {
     async function fetchComments() {
       try {
-        const res = await api.get("/comments");
+        const res = await api.getCached("/comments");
 
         const filtered = res.data.filter(
           (c) =>
