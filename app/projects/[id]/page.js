@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import api from "@/lib/api";
+import Comments from "@/app/components/Comments";
 
 // export const runtime = "edge";
 
@@ -70,6 +71,12 @@ export default async function ProjectDetail({ params }) {
               <dd className="mt-2 text-sm text-slate-950">{createdAt}</dd>
             </div>
           )}
+
+        </dl>
+        <dl className="mt-6 grid gap-4">
+          <div className="rounded-lg border border-slate-200 bg-white/85 p-4 shadow-sm text-center">
+            <Comments projectId={project.id} />
+          </div>
         </dl>
       </article>
     </section>
