@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import api from "@/lib/api";
 import ProtectedPage from "@/app/components/ProtectedPage";
+import Link from "next/link";
 
 export default function ProjectTasksPage() {
   const { id } = useParams();
@@ -45,6 +46,15 @@ export default function ProjectTasksPage() {
           <p className="text-sm text-slate-600">
             Project ID: {id}
           </p>
+        </div>
+
+        <div>
+          <Link
+            href="/projects"
+            className="button-secondary hover:border-slate-400 hover:bg-white"
+          >
+            &larr; Back to projects
+          </Link>
         </div>
 
         {loading ? (
