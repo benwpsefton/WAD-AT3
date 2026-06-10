@@ -13,6 +13,7 @@ export default function ProjectsPage() {
   const [editing, setEditing] = useState(null);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState("");
+  const [taskCounts, setTaskCounts] = useState({});
 
   const fetchProjects = (message = "") => {
     return api
@@ -33,6 +34,34 @@ export default function ProjectsPage() {
   useEffect(() => {
     fetchProjects();
   }, []);
+
+  useEffect(() => {
+    async function fetchTaskCounts() {
+      const counts = {};
+
+      for (const project of projects) {
+        try {
+          const res = await api.get(`/tasks/projects/${project.id}`);
+          counts[project.id] = Array.isArray(res.data)
+            ? res.data.length
+            : 0;
+        } catch (err) {
+          console.error(
+            `Failed to fetch tasks for project ${project.id}`,
+            err
+          );
+
+          counts[project.id] = 0;
+        }
+      }
+
+      setTaskCounts(counts);
+    }
+
+    if (projects.length > 0) {
+      fetchTaskCounts();
+    }
+  }, [projects]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -71,6 +100,8 @@ export default function ProjectsPage() {
     setForm({ name: project.name, description: project.description });
     setEditing(project.id);
   };
+
+  console.log(projects[0])
 
   return (
     <ProtectedPage>
@@ -210,9 +241,9 @@ export default function ProjectsPage() {
                       </button>
                       <Link
                         href={`/projects/${project.id}/tasks`}
-                        className="text-sm font-medium text-teal-700 hover:text-teal-900"
+                        className="rounded-[0.75rem] bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-200"
                       >
-                        View tasks →
+                        View {taskCounts[project.id] ?? 0} tasks
                       </Link>
                     </div>
                   </div>
