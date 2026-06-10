@@ -7,6 +7,14 @@ export default function Comments({ id, type }) {
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(false);
+  const [commentForm, setCommentForm] = useState({
+    content: "",
+    commentable_id: "",
+    type: ""
+  });
+  const [editingComment, setEditingComment] = useState(null);
+  const [commentError, setCommentError] = useState(null);
+  const [commentSuccess, setCommentSuccess] = useState("");
 
   useEffect(() => {
     async function fetchComments() {
@@ -43,6 +51,47 @@ export default function Comments({ id, type }) {
     ? comments
     : comments.slice(0, 2);
 
+  const handleCommentSubmit = (e) => {
+    e.preventDefault();
+
+    const formMethod = editingComment ? api.put : api.post;
+    const actionLabel = editingComment ? "updated" : "created";
+    const url = editingComment ? `/comments/${editingComment}` : "/comments";
+
+    formMethod(url, commentForm)
+      .then(() => fetchComments(`Comment ${actionLabel} successfully.`))
+      .then(() => {
+        setCommentForm({ content: "", commentable_id: "", type: "" });
+        setEditingComment(null);
+      })
+      .catch((err) => {
+        setCommentError(err.message);
+        setCommentSuccess("");
+      });
+  };
+
+  const handleCommentDelete = async (id) => {
+    if (!confirm("Are you sure you want to delete this comment?")) return;
+
+    try {
+      await api.delete(`/comments/${id}`);
+      setComments((prev) => prev.filter((c) => c.id !== id));
+      await fetchComments("Comment deleted successfully.");
+    } catch (err) {
+      setCommentError(err.message);
+      setCommentSuccess("");
+    }
+  };
+
+  const handleCommentEdit = (comment) => {
+    setCommentForm({
+      content: comment.content,
+      commentable_id: comment.commentable?.id,
+      type: comment.commentable?.type
+    });
+    setEditingComment(comment.id);
+  };
+  
   return (
     <div className="mt-5 space-y-3">
       <h3 className="text-sm font-semibold text-slate-900">
