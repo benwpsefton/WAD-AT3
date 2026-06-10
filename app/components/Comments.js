@@ -3,9 +3,10 @@
 import { useEffect, useState } from "react";
 import api from "@/lib/api";
 
-export default function Comments({ projectId }) {
+export default function Comments({ id, type }) {
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
     async function fetchComments() {
@@ -14,52 +15,74 @@ export default function Comments({ projectId }) {
 
         const filtered = res.data.filter(
           (c) =>
-            c.commentable.type === "Project" &&
-            c.commentable.id === projectId
+            c.commentable.type === type &&
+            c.commentable.id === id
         );
 
         setComments(filtered);
       } catch (err) {
         console.error("Failed to load comments", err);
+        setComments([]);
       } finally {
         setLoading(false);
       }
     }
 
     fetchComments();
-  }, [projectId]);
+  }, [id, type]);
 
   if (loading) {
     return (
-      <div className="surface-card p-5 rounded-[1rem] text-sm text-slate-600">
+      <div className="mt-4 text-sm text-slate-500">
         Loading comments...
       </div>
     );
   }
 
+  const visibleComments = expanded
+    ? comments
+    : comments.slice(0, 2);
+
   return (
-    <div className="space-y-3">
-      <h3 className="text-lg font-semibold text-slate-950">
+    <div className="mt-5 space-y-3">
+      <h3 className="text-sm font-semibold text-slate-900">
         Comments
       </h3>
 
       {comments.length === 0 ? (
-        <p className="text-sm text-slate-600">No comments yet.</p>
+        <p className="text-sm text-slate-500">
+          No comments yet.
+        </p>
       ) : (
-        comments.map((comment) => (
-          <div
-            key={comment.id}
-            className="surface-card rounded-[1rem] p-4"
-          >
-            <p className="text-sm text-slate-800">
-              {comment.content}
-            </p>
+        <>
+          <div className="space-y-2">
+            {visibleComments.map((comment) => (
+              <div
+                key={comment.id}
+                className="rounded-lg border border-slate-200 bg-white/80 p-3"
+              >
+                <p className="text-sm text-slate-800">
+                  {comment.content}
+                </p>
 
-            <div className="mt-2 text-xs text-slate-500">
-              By {comment.user.name}
-            </div>
+                <p className="mt-1 text-xs text-slate-500">
+                  By {comment.user.name}
+                </p>
+              </div>
+            ))}
           </div>
-        ))
+
+          {comments.length > 2 && (
+            <button
+              onClick={() => setExpanded(!expanded)}
+              className="text-xs font-medium text-teal-700 hover:text-teal-900"
+            >
+              {expanded
+                ? "Show less"
+                : `View ${comments.length - 2} more`}
+            </button>
+          )}
+        </>
       )}
     </div>
   );

@@ -219,7 +219,7 @@ export default function ProjectsPage() {
                       href={`/projects/${project.id}`}
                       className="block text-lg font-semibold text-slate-950 hover:text-teal-700"
                     >
-                      {project.name}
+                      {project.name} →
                     </Link>
                     <p className="mt-2 text-sm text-slate-500">
                       Created: {project.created?.human}

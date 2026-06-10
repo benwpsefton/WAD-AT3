@@ -75,7 +75,7 @@ export default async function ProjectDetail({ params }) {
         </dl>
         <dl className="mt-6 grid gap-4">
           <div className="rounded-lg border border-slate-200 bg-white/85 p-4 shadow-sm text-center">
-            <Comments projectId={project.id} />
+            <Comments id={project.id} type="Project" />
           </div>
         </dl>
       </article>

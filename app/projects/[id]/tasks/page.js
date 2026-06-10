@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import api from "@/lib/api";
 import ProtectedPage from "@/app/components/ProtectedPage";
 import Link from "next/link";
+import Comments from "@/app/components/Comments";
 
 export default function ProjectTasksPage() {
   const { id } = useParams();
@@ -96,6 +97,10 @@ export default function ProjectTasksPage() {
                 <p className="mt-4 text-xs text-slate-500">
                   Project: {task.project?.name}
                 </p>
+                
+                <div className="mt-6 gap-4">
+                  <Comments id={task.id} type="Task" />
+                </div>
 
               </div>
             ))}
