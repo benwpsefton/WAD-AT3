@@ -12,23 +12,11 @@ export default function ProtectedPage({ children }) {
     if (!token) {
       router.replace("/login");
     }
-  }, [router]);
+  });
 
-  if (typeof window === "undefined") {
-    return null;
-  }
-
-  const token = localStorage.getItem("token");
-
-  if (!token) {
-    return (
-      <div className="flex min-h-[20rem] items-center justify-center">
-        <p className="text-sm text-slate-600">
-          Checking authentication...
-        </p>
-      </div>
-    );
-  }
-
-  return children;
+  return (
+    <>
+      {children}
+    </>
+  );
 }
