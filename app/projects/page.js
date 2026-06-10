@@ -101,8 +101,6 @@ export default function ProjectsPage() {
     setEditing(project.id);
   };
 
-  console.log(projects[0])
-
   return (
     <ProtectedPage>
       <section className="section-stack py-6">
@@ -223,6 +221,9 @@ export default function ProjectsPage() {
                     >
                       {project.name}
                     </Link>
+                    <p className="mt-2 text-sm text-slate-500">
+                      Created: {project.created?.human}
+                    </p>
                     <p className="mb-4 mt-2 text-sm leading-6 text-slate-600">
                       {project.description || "No description"}
                     </p>
