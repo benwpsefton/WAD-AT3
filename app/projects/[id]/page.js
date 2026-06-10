@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import api from "@/lib/api";
 import Comments from "@/app/components/Comments";
+import Milestones from "@/app/components/Milestones";
 
 // export const runtime = "edge";
 
@@ -34,13 +35,24 @@ export default async function ProjectDetail({ params }) {
         </p>
       </div>
 
-      <div>
-        <Link
-          href="/projects"
-          className="button-secondary hover:border-slate-400 hover:bg-white"
-        >
-          &larr; Back to projects
-        </Link>
+      <div className="flex justify-between items-center">
+        <div>
+          <Link
+            href="/projects"
+            className="button-secondary hover:border-slate-400 hover:bg-white"
+          >
+            &larr; Back to projects
+          </Link>
+        </div>
+
+        <div>
+          <Link
+            href={`/projects/${project.id}/tasks`}
+            className="button-secondary hover:border-slate-400 hover:bg-white"
+          >
+            View tasks &rarr;
+          </Link>
+        </div>
       </div>
 
       <article className="surface-card rounded-[1rem] p-6 md:p-8">
@@ -73,9 +85,12 @@ export default async function ProjectDetail({ params }) {
           )}
 
         </dl>
-        <dl className="mt-6 grid gap-4">
+        <dl className="mt-6 grid gap-4 sm:grid-cols-2">
           <div className="rounded-lg border border-slate-200 bg-white/85 p-4 shadow-sm text-center">
             <Comments id={project.id} type="Project" />
+          </div>
+          <div className="rounded-lg border border-slate-200 bg-white/85 p-4 shadow-sm text-center">
+            <Milestones projectId={project.id} />
           </div>
         </dl>
       </article>
