@@ -109,7 +109,7 @@ export default function ProjectTasksPage() {
       : "/checklist-items";
 
     formMethod(url, checklistForm)
-      .then(() => fetchChecklists(`Checklist ${actionLabel} successfully.`))
+      .then(() => fetchData(`Checklist ${actionLabel} successfully.`))
       .then(() => {
         setChecklistForm({ label: "", completed: 0, task_id: "" });
         setEditingChecklist(null);
@@ -126,7 +126,7 @@ export default function ProjectTasksPage() {
     try {
       await api.delete(`/checklist-items/${id}`);
       setChecklists((prev) => prev.filter((c) => c.id !== id));
-      await fetchChecklists("Checklist deleted successfully.");
+      await fetchData("Checklist deleted successfully.");
     } catch (err) {
       setChecklistError(err.message);
       setChecklistSuccess("");
@@ -332,6 +332,22 @@ export default function ProjectTasksPage() {
                       <p className="mt-4 text-xs text-slate-500">
                         Project: {task.project?.name}
                       </p>
+                      
+                      <div className="flex gap-2 mt-4">
+                        <button
+                          onClick={() => handleTaskEdit(task)}
+                          className="button-secondary px-3 py-2 text-sm hover:border-slate-400 hover:bg-white"
+                        >
+                          Edit
+                        </button>
+
+                        <button
+                          onClick={() => handleTaskDelete(task.id)}
+                          className="rounded-[0.75rem] bg-rose-100 px-3 py-2 text-sm font-semibold text-rose-800 hover:bg-rose-200"
+                        >
+                          Delete
+                        </button>
+                      </div>
 
                       {taskChecklist.length > 0 && (
                         <div className="mt-4 space-y-2">
@@ -354,22 +370,6 @@ export default function ProjectTasksPage() {
                           ))}
                         </div>
                       )}
-
-                      <div className="flex gap-2 mt-4">
-                        <button
-                          onClick={() => handleTaskEdit(task)}
-                          className="button-secondary px-3 py-2 text-sm hover:border-slate-400 hover:bg-white"
-                        >
-                          Edit
-                        </button>
-
-                        <button
-                          onClick={() => handleTaskDelete(task.id)}
-                          className="rounded-[0.75rem] bg-rose-100 px-3 py-2 text-sm font-semibold text-rose-800 hover:bg-rose-200"
-                        >
-                          Delete
-                        </button>
-                      </div>
 
                       <div className="mt-6 gap-4">
                         <Comments id={task.id} type="Task" />

@@ -48,27 +48,6 @@ export default function Milestones({ projectId }) {
     fetchMilestones(projectId);
   }, [projectId]);
 
-  // useEffect(() => {
-  //   async function fetchMilestones() {
-  //     try {
-  //       const res = await api.getCached("/milestones");
-
-  //       const filtered = res.data.filter(
-  //         (m) => m.project?.id === projectId
-  //       );
-
-  //       setMilestones(filtered);
-  //     } catch (err) {
-  //       console.error("Failed to load milestones:", err);
-  //       setMilestones([]);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   }
-
-  //   fetchMilestones();
-  // }, [projectId]);
-
   if (loading) {
     return (
       <div className="mt-4 text-sm text-slate-500">
