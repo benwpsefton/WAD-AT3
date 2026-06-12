@@ -28,8 +28,8 @@ export default function ProjectTasksPage() {
 
   const fetchData = (message = "") => {
     return Promise.all([
-      api.getCached(`/tasks/projects/${id}`),
-      api.getCached("/checklist-items"),
+      api.get(`/tasks/projects/${id}`),
+      api.get("/checklist-items"),
     ])
       .then(([tasksRes, checklistRes]) => {
         setTasks(Array.isArray(tasksRes.data) ? tasksRes.data : []);
@@ -53,7 +53,7 @@ export default function ProjectTasksPage() {
 
   useEffect(() => {
     fetchData();
-  });
+  }, []);
 
   const getChecklistForTask = (taskId) => {
     return checklists.filter((item) => item.task_id === taskId);
@@ -86,7 +86,7 @@ export default function ProjectTasksPage() {
 
     try {
       await api.delete(`/tasks/${id}`);
-      setTasks((prev) => prev.filter((t) => t.id !== id));
+      setTasks((prev) => prev.filter((task) => task.id !== id));
       await fetchData("Task deleted successfully.");
     } catch (err) {
       setTaskError(err.message);
