@@ -17,26 +17,57 @@ export default function Milestones({ projectId }) {
   const [milestoneError, setMilestoneError] = useState(null);
   const [milestoneSuccess, setMilestoneSuccess] = useState("");
 
-  useEffect(() => {
-    async function fetchMilestones() {
-      try {
-        const res = await api.getCached("/milestones");
-
-        const filtered = res.data.filter(
-          (m) => m.project?.id === projectId
-        );
+  const fetchMilestones = (projectId, message = "") => {
+    return api
+      .get("/milestones")
+      .then((res) => {
+        const filtered = Array.isArray(res.data)
+          ? res.data.filter((m) => m.project?.id === projectId)
+          : [];
 
         setMilestones(filtered);
-      } catch (err) {
+
+        if (message) {
+          setMilestoneSuccess(message);
+        }
+
+        setMilestoneError(null);
+      })
+      .catch((err) => {
         console.error("Failed to load milestones:", err);
         setMilestones([]);
-      } finally {
+        setMilestoneError(err.message);
+        setMilestoneSuccess("");
+      })
+      .finally(() => {
         setLoading(false);
-      }
-    }
+      });
+  };
 
-    fetchMilestones();
+  useEffect(() => {
+    fetchMilestones(projectId);
   }, [projectId]);
+
+  // useEffect(() => {
+  //   async function fetchMilestones() {
+  //     try {
+  //       const res = await api.getCached("/milestones");
+
+  //       const filtered = res.data.filter(
+  //         (m) => m.project?.id === projectId
+  //       );
+
+  //       setMilestones(filtered);
+  //     } catch (err) {
+  //       console.error("Failed to load milestones:", err);
+  //       setMilestones([]);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   }
+
+  //   fetchMilestones();
+  // }, [projectId]);
 
   if (loading) {
     return (

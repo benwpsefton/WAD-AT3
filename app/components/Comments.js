@@ -16,26 +16,38 @@ export default function Comments({ id, type }) {
   const [commentError, setCommentError] = useState(null);
   const [commentSuccess, setCommentSuccess] = useState("");
 
-  useEffect(() => {
-    async function fetchComments() {
-      try {
-        const res = await api.getCached("/comments");
-
-        const filtered = res.data.filter(
-          (c) =>
-            c.commentable.type === type &&
-            c.commentable.id === id
-        );
+  const fetchComments = (message = "") => {
+    return api
+      .get("/comments")
+      .then((res) => {
+        const filtered = Array.isArray(res.data)
+          ? res.data.filter(
+              (c) =>
+                c.commentable.type === type &&
+                c.commentable.id === id
+            )
+          : [];
 
         setComments(filtered);
-      } catch (err) {
+
+        if (message) {
+          setCommentSuccess(message);
+        }
+
+        setCommentError(null);
+      })
+      .catch((err) => {
         console.error("Failed to load comments", err);
         setComments([]);
-      } finally {
+        setCommentError(err.message);
+        setCommentSuccess("");
+      })
+      .finally(() => {
         setLoading(false);
-      }
-    }
+      });
+  };
 
+  useEffect(() => {
     fetchComments();
   }, [id, type]);
 

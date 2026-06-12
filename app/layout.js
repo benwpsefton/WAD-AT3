@@ -7,7 +7,7 @@ const navigation_links = [
   { href: "/", label: "Home" },
   { href: "/users", label: "Users" },
   { href: "/projects", label: "Projects" },
-  { href: "/nasa-api", label: "NASA API" },
+  { href: "/tasks", label: "Tasks" },
   { href: "/about", label: "About" },
 ];
 
