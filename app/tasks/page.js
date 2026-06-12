@@ -4,11 +4,8 @@ import { useEffect, useState } from "react";
 import api from "@/lib/api";
 import ProtectedPage from "@/app/components/ProtectedPage";
 import Link from "next/link";
-import { useParams } from "next/navigation";
 
 export default function AllTasksPage() {
-  const { id } = useParams();
-
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

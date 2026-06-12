@@ -7,6 +7,8 @@ import ProtectedPage from "@/app/components/ProtectedPage";
 import Link from "next/link";
 import Comments from "@/app/components/Comments";
 
+const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 export default function ProjectTasksPage() {
   const { id } = useParams();
 
@@ -39,6 +41,7 @@ export default function ProjectTasksPage() {
 
         if (message) {
           setTaskSuccess(message);
+          setChecklistSuccess(message);
         }
 
         setTaskError(null);
@@ -46,7 +49,9 @@ export default function ProjectTasksPage() {
       })
       .catch((err) => {
         setTaskError(err.message);
+        setChecklistError(err.message);
         setTaskSuccess("");
+        setChecklistSuccess("");
       })
       .finally(() => {
         setLoading(false);
@@ -90,6 +95,7 @@ export default function ProjectTasksPage() {
       await api.delete(`/tasks/${id}`);
       setTasks((prev) => prev.filter((task) => task.id !== id));
       await fetchData("Task deleted successfully.");
+      await wait(200);
     } catch (err) {
       setTaskError(err.message);
       setTaskSuccess("");
@@ -392,11 +398,12 @@ export default function ProjectTasksPage() {
                               : ""
                           }
                           onChange={(e) =>
-                            setChecklistForm({
+                            setChecklistForm((prev) => ({
+                              ...prev,
                               label: e.target.value,
-                              completed: 0,
                               task_id: task.id,
-                            })
+                              completed: 0,
+                            }))
                           }
                           className="flex-1 rounded border border-slate-300 p-1 text-sm"
                         />
