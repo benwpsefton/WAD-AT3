@@ -32,6 +32,8 @@ export default function ProjectTasksPage() {
       api.get("/checklist-items"),
     ])
       .then(([tasksRes, checklistRes]) => {
+        console.log(checklistRes.data.length)
+
         setTasks(Array.isArray(tasksRes.data) ? tasksRes.data : []);
         setChecklists(Array.isArray(checklistRes.data) ? checklistRes.data : []);
 
@@ -100,7 +102,7 @@ export default function ProjectTasksPage() {
   };
 
   const handleChecklistSubmit = (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
 
     const formMethod = editingChecklist ? api.put : api.post;
     const actionLabel = editingChecklist ? "updated" : "created";
@@ -333,7 +335,7 @@ export default function ProjectTasksPage() {
                         Project: {task.project?.name}
                       </p>
                       
-                      <div className="flex gap-2 mt-4">
+                      <div className="flex gap-2 mt-4 mb-6">
                         <button
                           onClick={() => handleTaskEdit(task)}
                           className="button-secondary px-3 py-2 text-sm hover:border-slate-400 hover:bg-white"
@@ -349,27 +351,63 @@ export default function ProjectTasksPage() {
                         </button>
                       </div>
 
-                      {taskChecklist.length > 0 && (
-                        <div className="mt-4 space-y-2">
-                          <p className="text-xs font-semibold text-slate-600">
-                            Checklist
-                          </p>
+                      {taskChecklist.map((item) => (
+                        <div
+                          key={item.id}
+                          className="flex items-center gap-2 text-sm"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={item.completed === 1}
+                            readOnly
+                          />
 
-                          {taskChecklist.map((item) => (
-                            <div
-                              key={item.id}
-                              className="flex items-center gap-2 text-sm"
-                            >
-                              <input
-                                type="checkbox"
-                                checked={item.completed === 1}
-                                readOnly
-                              />
-                              <span>{item.label}</span>
-                            </div>
-                          ))}
+                          <span className="flex-1">
+                            {item.label}
+                          </span>
+
+                          <button
+                            onClick={() => handleChecklistEdit(item)}
+                            className="text-xs text-slate-600"
+                          >
+                            Edit
+                          </button>
+
+                          <button
+                            onClick={() => handleChecklistDelete(item.id)}
+                            className="text-xs text-rose-600"
+                          >
+                            Delete
+                          </button>
                         </div>
-                      )}
+                      ))}
+
+                      <div className="mt-4 flex gap-2">
+                        <input
+                          type="text"
+                          placeholder="New checklist item"
+                          value={
+                            checklistForm.task_id === task.id
+                              ? checklistForm.label
+                              : ""
+                          }
+                          onChange={(e) =>
+                            setChecklistForm({
+                              label: e.target.value,
+                              completed: 0,
+                              task_id: task.id,
+                            })
+                          }
+                          className="flex-1 rounded border border-slate-300 p-1 text-sm"
+                        />
+
+                        <button
+                          onClick={handleChecklistSubmit}
+                          className="button-secondary px-2 text-sm"
+                        >
+                          {editingChecklist ? "Update" : "Add"}
+                        </button>
+                      </div>
 
                       <div className="mt-6 gap-4">
                         <Comments id={task.id} type="Task" />
