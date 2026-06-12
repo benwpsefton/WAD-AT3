@@ -10,7 +10,7 @@ export default function Comments({ id, type }) {
   const [commentForm, setCommentForm] = useState({
     content: "",
     commentable_id: "",
-    type: ""
+    commentable_type: ""
   });
   const [editingComment, setEditingComment] = useState(null);
   const [commentError, setCommentError] = useState(null);
@@ -69,11 +69,10 @@ export default function Comments({ id, type }) {
     const formMethod = editingComment ? api.put : api.post;
     const actionLabel = editingComment ? "updated" : "created";
     const url = editingComment ? `/comments/${editingComment}` : "/comments";
-
     formMethod(url, commentForm)
       .then(() => fetchComments(`Comment ${actionLabel} successfully.`))
       .then(() => {
-        setCommentForm({ content: "", commentable_id: "", type: "" });
+        setCommentForm({ content: "", commentable_id: "", commentable_type: "" });
         setEditingComment(null);
       })
       .catch((err) => {
@@ -129,6 +128,21 @@ export default function Comments({ id, type }) {
                 <p className="mt-1 text-xs text-slate-500">
                   By {comment.user.name}
                 </p>
+                <div className="mt-2 flex gap-3">
+                  <button
+                    onClick={() => handleCommentEdit(comment)}
+                    className="text-xs text-slate-600 hover:text-slate-900"
+                  >
+                    Edit
+                  </button>
+
+                  <button
+                    onClick={() => handleCommentDelete(comment.id)}
+                    className="text-xs text-rose-600 hover:text-rose-800"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -143,6 +157,21 @@ export default function Comments({ id, type }) {
                 : `View ${comments.length - 2} more`}
             </button>
           )}
+
+          <form onSubmit={handleCommentSubmit} className="mt-4 flex gap-2">
+            <input
+              value={commentForm.content}
+              onChange={(e) =>
+                setCommentForm({ ...commentForm, content: e.target.value })
+              }
+              placeholder="Write a comment..."
+              className="flex-1 rounded-lg border border-slate-300 p-2 text-sm"
+            />
+
+            <button className="button-primary px-3 py-2 text-sm">
+              {editingComment ? "Update" : "Add"}
+            </button>
+          </form>
         </>
       )}
     </div>
