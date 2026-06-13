@@ -6,6 +6,7 @@ import api from "@/lib/api";
 import ProtectedPage from "@/app/components/ProtectedPage";
 import Link from "next/link";
 import Comments from "@/app/components/Comments";
+import { useCallback } from "react";
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -28,7 +29,7 @@ export default function ProjectTasksPage() {
   const [checklistError, setChecklistError] = useState(null);
   const [checklistSuccess, setChecklistSuccess] = useState("");
 
-  const fetchTasks = (message = "") => {
+  const fetchTasks = useCallback((message = "") => {
     return api
       .get(`/tasks/projects/${id}`)
       .then((res) => {
@@ -45,7 +46,7 @@ export default function ProjectTasksPage() {
       .finally(() => {
         setLoading(false);
       });
-  };
+  }, [id]);
 
   const fetchChecklists = (message = "") => {
     return api
@@ -68,7 +69,7 @@ export default function ProjectTasksPage() {
 
   useEffect(() => {
     fetchTasks();
-  }, []);
+  }, [fetchTasks]);
 
   useEffect(() => {
     fetchChecklists();

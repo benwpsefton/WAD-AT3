@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import api from "@/lib/api";
+import { useCallback } from "react";
 
 export default function Comments({ id, type }) {
   const [comments, setComments] = useState([]);
@@ -16,7 +17,7 @@ export default function Comments({ id, type }) {
   const [commentError, setCommentError] = useState(null);
   const [commentSuccess, setCommentSuccess] = useState("");
 
-  const fetchComments = (message = "") => {
+  const fetchComments = useCallback((message = "") => {
     return api
       .get("/comments")
       .then((res) => {
@@ -45,11 +46,11 @@ export default function Comments({ id, type }) {
       .finally(() => {
         setLoading(false);
       });
-  };
+  }, [id, type]);
 
   useEffect(() => {
   fetchComments();
-}, [id, type]);
+}, [fetchComments]);
 
   if (loading) {
     return (
