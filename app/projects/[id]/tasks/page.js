@@ -34,8 +34,11 @@ export default function ProjectTasksPage() {
       api.get("/checklist-items"),
     ])
       .then(([tasksRes, checklistRes]) => {
-        console.log(checklistRes.data.length)
+        console.log("CHECKLIST RAW RESPONSE:", checklistRes.data);
+        console.log("CHECKLIST COUNT:", checklistRes.data.length);
+        console.log("CHECKLIST IDS:", checklistRes.data.map(c => c.id));
 
+        console.log("TASKS COUNT:", tasksRes.data.length);
         setTasks(Array.isArray(tasksRes.data) ? tasksRes.data : []);
         setChecklists(Array.isArray(checklistRes.data) ? checklistRes.data : []);
 
@@ -116,13 +119,24 @@ export default function ProjectTasksPage() {
       ? `/checklist-items/${editingChecklist}`
       : "/checklist-items";
 
-    formMethod(url, checklistForm)
-      .then(() => fetchData(`Checklist ${actionLabel} successfully.`))
+    formMethod(url, {
+      ...checklistForm,
+    })
+      .then(() =>
+        fetchData(`Checklist ${actionLabel} successfully.`)
+      )
       .then(() => {
-        setChecklistForm({ label: "", completed: 0, task_id: "" });
+        setChecklistForm({
+          label: "",
+          completed: 0,
+          task_id: "",
+        });
+
         setEditingChecklist(null);
       })
       .catch((err) => {
+        console.log("Checklist error response:", err.response?.data);
+
         setChecklistError(err.message);
         setChecklistSuccess("");
       });
@@ -356,6 +370,20 @@ export default function ProjectTasksPage() {
                           Delete
                         </button>
                       </div>
+                      
+                      {checklistError && (
+                        <div className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
+                          <p className="font-semibold">This action could not be completed.</p>
+                          <p>{checklistError}</p>
+                        </div>
+                      )}
+
+                      {!checklistError && checklistSuccess && (
+                        <div className="rounded-lg border border-teal-200 bg-teal-50 px-4 py-3 mb-4 text-sm text-teal-900">
+                          <p className="font-semibold">Status</p>
+                          <p>{checklistSuccess}</p>
+                        </div>
+                      )}
 
                       {taskChecklist.map((item) => (
                         <div
@@ -409,6 +437,7 @@ export default function ProjectTasksPage() {
                         />
 
                         <button
+                          type="button"
                           onClick={handleChecklistSubmit}
                           className="button-secondary px-2 text-sm"
                         >
