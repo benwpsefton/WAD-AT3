@@ -28,32 +28,37 @@ export default function ProjectTasksPage() {
   const [checklistError, setChecklistError] = useState(null);
   const [checklistSuccess, setChecklistSuccess] = useState("");
 
-  const fetchData = (message = "") => {
-    return Promise.all([
-      api.get(`/tasks/projects/${id}`),
-      api.get(`/checklist-items?task_id=${id}`)
-    ])
-      .then(([tasksRes, checklistRes]) => {
-        console.log("CHECKLIST RAW RESPONSE:", checklistRes.data);
-        console.log("CHECKLIST COUNT:", checklistRes.data.length);
-        console.log("CHECKLIST IDS:", checklistRes.data.map(c => c.id));
-
-        console.log("TASKS COUNT:", tasksRes.data.length);
-        setTasks(Array.isArray(tasksRes.data) ? tasksRes.data : []);
-        setChecklists(Array.isArray(checklistRes.data) ? checklistRes.data : []);
-
+  const fetchTasks = (message = "") => {
+    return api
+      .get(`/tasks/projects/${id}`)
+      .then((res) => {
+        setTasks(res.data.data || res.data);
         if (message) {
           setTaskSuccess(message);
-          setChecklistSuccess(message);
         }
-
         setTaskError(null);
-        setChecklistError(null);
       })
       .catch((err) => {
         setTaskError(err.message);
-        setChecklistError(err.message);
         setTaskSuccess("");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  const fetchChecklists = (message = "") => {
+    return api
+      .get(`/checklist-items`)
+      .then((res) => {
+        setChecklists(res.data.data || res.data);
+        if (message) {
+          setChecklistSuccess(message);
+        }
+        setChecklistError(null);
+      })
+      .catch((err) => {
+        setChecklistError(err.message);
         setChecklistSuccess("");
       })
       .finally(() => {
@@ -62,7 +67,11 @@ export default function ProjectTasksPage() {
   };
 
   useEffect(() => {
-    fetchData();
+    fetchTasks();
+  }, []);
+
+  useEffect(() => {
+    fetchChecklists();
   }, []);
 
   const getChecklistForTask = (taskId) => {
@@ -80,7 +89,7 @@ export default function ProjectTasksPage() {
       ...taskForm,
       project_id: id
     })
-      .then(() => fetchData(`Task ${actionLabel} successfully.`))
+      .then(() => fetchTasks(`Task ${actionLabel} successfully.`))
       .then(() => {
         setTaskForm({ name: "", description: "", status: "todo" });
         setEditingTask(null);
@@ -97,7 +106,7 @@ export default function ProjectTasksPage() {
     try {
       await api.delete(`/tasks/${id}`);
       setTasks((prev) => prev.filter((task) => task.id !== id));
-      await fetchData("Task deleted successfully.");
+      await fetchTasks("Task deleted successfully.");
       await wait(200);
     } catch (err) {
       setTaskError(err.message);
@@ -123,7 +132,7 @@ export default function ProjectTasksPage() {
       ...checklistForm,
     })
       .then(() =>
-        fetchData(`Checklist ${actionLabel} successfully.`)
+        fetchChecklists(`Checklist ${actionLabel} successfully.`)
       )
       .then(() => {
         setChecklistForm({
@@ -135,8 +144,6 @@ export default function ProjectTasksPage() {
         setEditingChecklist(null);
       })
       .catch((err) => {
-        console.log("Checklist error response:", err.response?.data);
-
         setChecklistError(err.message);
         setChecklistSuccess("");
       });
@@ -148,7 +155,7 @@ export default function ProjectTasksPage() {
     try {
       await api.delete(`/checklist-items/${id}`);
       setChecklists((prev) => prev.filter((c) => c.id !== id));
-      await fetchData("Checklist deleted successfully.");
+      await fetchChecklists("Checklist deleted successfully.");
     } catch (err) {
       setChecklistError(err.message);
       setChecklistSuccess("");
