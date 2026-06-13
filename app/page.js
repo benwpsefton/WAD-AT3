@@ -14,8 +14,7 @@ export default function HomePage() {
                 A simple frontend for users, projects, and API examples.
               </h1>
               <p className="max-w-2xl text-base leading-7 text-slate-600">
-                Use this app to browse users, manage projects, and test the
-                NASA API pages. The layout has been simplified to keep the main
+                Use this app to browse users, manage projects, and manage all project tasks. The layout has been simplified to keep the main
                 routes easy to scan.
               </p>
             </div>
@@ -32,6 +31,12 @@ export default function HomePage() {
               >
                 Open Users
               </Link>
+              <Link
+                href="/tasks"
+                className="button-secondary hover:border-amber-400 hover:bg-white"
+              >
+                Open Tasks
+              </Link>
             </div>
           </div>
 
@@ -39,7 +44,7 @@ export default function HomePage() {
             {[
               ["Users", "View the user list and basic account details."],
               ["Projects", "Create, edit, and remove projects."],
-              ["NASA API", "Fetch and review APOD entries by date or range."],
+              ["Tasks", "View global tasks grouped by project."],
             ].map(([title, copy]) => (
               <div
                 key={title}

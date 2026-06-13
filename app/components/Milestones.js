@@ -58,55 +58,6 @@ export default function Milestones({ projectId }) {
 
   const visible = expanded ? milestones : milestones.slice(0, 2);
 
-  const handleMilestoneSubmit = (e) => {
-    e.preventDefault();
-
-    const formMethod = editingMilestone ? api.put : api.post;
-    const actionLabel = editingMilestone ? "updated" : "created";
-    const url = editingMilestone
-      ? `/milestones/${editingMilestone}`
-      : "/milestones";
-
-    formMethod(url, milestoneForm)
-      .then(() => fetchMilestones(`Milestone ${actionLabel} successfully.`))
-      .then(() => {
-        setMilestoneForm({
-          title: "",
-          description: "",
-          due_date: "",
-          project_id: ""
-        });
-        setEditingMilestone(null);
-      })
-      .catch((err) => {
-        setMilestoneError(err.message);
-        setMilestoneSuccess("");
-      });
-  };
-
-  const handleMilestoneDelete = async (id) => {
-    if (!confirm("Are you sure you want to delete this milestone?")) return;
-
-    try {
-      await api.delete(`/milestones/${id}`);
-      setMilestones((prev) => prev.filter((m) => m.id !== id));
-      await fetchMilestones("Milestone deleted successfully.");
-    } catch (err) {
-      setMilestoneError(err.message);
-      setMilestoneSuccess("");
-    }
-  };
-
-  const handleMilestoneEdit = (milestone) => {
-    setMilestoneForm({
-      title: milestone.title,
-      description: milestone.description,
-      due_date: milestone.due_date,
-      project_id: milestone.project?.id
-    });
-    setEditingMilestone(milestone.id);
-  };
-
   return (
     <div className="mt-6 space-y-3">
       <h3 className="text-sm font-semibold text-slate-900">
