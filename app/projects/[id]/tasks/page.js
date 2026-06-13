@@ -31,7 +31,7 @@ export default function ProjectTasksPage() {
   const fetchData = (message = "") => {
     return Promise.all([
       api.get(`/tasks/projects/${id}`),
-      api.get("/checklist-items"),
+      api.get(`/checklist-items?task_id=${id}`)
     ])
       .then(([tasksRes, checklistRes]) => {
         console.log("CHECKLIST RAW RESPONSE:", checklistRes.data);
