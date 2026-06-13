@@ -12,7 +12,7 @@ export default function ProtectedPage({ children }) {
     if (!token) {
       router.replace("/login");
     }
-  });
+  }, [router]);
 
   return (
     <>
