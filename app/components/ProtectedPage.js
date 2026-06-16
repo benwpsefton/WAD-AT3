@@ -14,9 +14,5 @@ export default function ProtectedPage({ children }) {
     }
   }, [router]);
 
-  return (
-    <>
-      {children}
-    </>
-  );
+  return <>{children}</>;
 }

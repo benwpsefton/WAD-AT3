@@ -42,14 +42,9 @@ export default function ProjectsPage() {
       for (const project of projects) {
         try {
           const res = await api.getCached(`/tasks/projects/${project.id}`);
-          counts[project.id] = Array.isArray(res.data)
-            ? res.data.length
-            : 0;
+          counts[project.id] = Array.isArray(res.data) ? res.data.length : 0;
         } catch (err) {
-          console.error(
-            `Failed to fetch tasks for project ${project.id}`,
-            err
-          );
+          console.error(`Failed to fetch tasks for project ${project.id}`, err);
 
           counts[project.id] = 0;
         }
@@ -162,7 +157,9 @@ export default function ProjectsPage() {
               <textarea
                 placeholder="Describe the project (optional)"
                 value={form.description}
-                onChange={(e) => setForm({ ...form, description: e.target.value })}
+                onChange={(e) =>
+                  setForm({ ...form, description: e.target.value })
+                }
                 className="rounded-lg border border-slate-300 bg-white p-2.5 text-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
                 rows="4"
               />
@@ -213,7 +210,7 @@ export default function ProjectsPage() {
                 projects.map((project) => (
                   <div
                     key={project.id}
-                  className="surface-card rounded-[1rem] p-5"
+                    className="surface-card rounded-[1rem] p-5"
                   >
                     <Link
                       href={`/projects/${project.id}`}
@@ -236,7 +233,7 @@ export default function ProjectsPage() {
                       </button>
                       <button
                         onClick={() => handleDelete(project.id)}
-                      className="rounded-[0.75rem] bg-rose-100 px-3 py-2 text-sm font-semibold text-rose-800 hover:bg-rose-200"
+                        className="rounded-[0.75rem] bg-rose-100 px-3 py-2 text-sm font-semibold text-rose-800 hover:bg-rose-200"
                       >
                         Delete
                       </button>

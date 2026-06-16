@@ -99,8 +99,8 @@ export default function AllTasksPage() {
                               task.status === "done"
                                 ? "bg-emerald-100 text-emerald-700"
                                 : task.status === "in_progress"
-                                ? "bg-amber-100 text-amber-700"
-                                : "bg-slate-100 text-slate-700"
+                                  ? "bg-amber-100 text-amber-700"
+                                  : "bg-slate-100 text-slate-700"
                             }`}
                         >
                           {task.status}

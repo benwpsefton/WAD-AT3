@@ -52,9 +52,7 @@ export default function LoginPage() {
   return (
     <section className="section-stack py-10">
       <div className="max-w-md mx-auto surface-card rounded-[1rem] p-6 space-y-4">
-        <h1 className="text-2xl font-semibold text-slate-950">
-          Login
-        </h1>
+        <h1 className="text-2xl font-semibold text-slate-950">Login</h1>
 
         <p className="text-sm text-slate-600">
           Sign in to access your project workspace.

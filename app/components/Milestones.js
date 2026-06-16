@@ -11,7 +11,7 @@ export default function Milestones({ projectId }) {
     title: "",
     description: "",
     due_date: "",
-    project_id: ""
+    project_id: "",
   });
   const [editingMilestone, setEditingMilestone] = useState(null);
   const [milestoneError, setMilestoneError] = useState(null);
@@ -50,9 +50,7 @@ export default function Milestones({ projectId }) {
 
   if (loading) {
     return (
-      <div className="mt-4 text-sm text-slate-500">
-        Loading milestones...
-      </div>
+      <div className="mt-4 text-sm text-slate-500">Loading milestones...</div>
     );
   }
 
@@ -60,9 +58,7 @@ export default function Milestones({ projectId }) {
 
   return (
     <div className="mt-6 space-y-3">
-      <h3 className="text-sm font-semibold text-slate-900">
-        Milestones
-      </h3>
+      <h3 className="text-sm font-semibold text-slate-900">Milestones</h3>
 
       {milestones.length === 0 ? (
         <p className="text-sm text-slate-500">
@@ -76,22 +72,16 @@ export default function Milestones({ projectId }) {
                 key={m.id}
                 className="rounded-lg border border-slate-200 bg-white/80 p-3"
               >
-                <p className="text-sm font-medium text-slate-900">
-                  {m.title}
-                </p>
+                <p className="text-sm font-medium text-slate-900">{m.title}</p>
 
                 {m.description && (
-                  <p className="mt-1 text-sm text-slate-600">
-                    {m.description}
-                  </p>
+                  <p className="mt-1 text-sm text-slate-600">{m.description}</p>
                 )}
 
                 <div className="mt-2 flex justify-between text-xs text-slate-500">
                   <span>Due: {m.due_date}</span>
 
-                  <span>
-                    {m.completed_at ? "Completed" : "Pending"}
-                  </span>
+                  <span>{m.completed_at ? "Completed" : "Pending"}</span>
                 </div>
               </div>
             ))}
@@ -102,9 +92,7 @@ export default function Milestones({ projectId }) {
               onClick={() => setExpanded(!expanded)}
               className="text-xs font-medium text-teal-700 hover:text-teal-900"
             >
-              {expanded
-                ? "Show less"
-                : `View ${milestones.length - 2} more`}
+              {expanded ? "Show less" : `View ${milestones.length - 2} more`}
             </button>
           )}
         </>

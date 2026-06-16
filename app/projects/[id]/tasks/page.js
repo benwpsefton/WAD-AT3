@@ -15,7 +15,11 @@ export default function ProjectTasksPage() {
 
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [taskForm, setTaskForm] = useState({ name: "", description: "", status: "todo" });
+  const [taskForm, setTaskForm] = useState({
+    name: "",
+    description: "",
+    status: "todo",
+  });
   const [editingTask, setEditingTask] = useState(null);
   const [taskError, setTaskError] = useState(null);
   const [taskSuccess, setTaskSuccess] = useState("");
@@ -23,30 +27,33 @@ export default function ProjectTasksPage() {
   const [checklistForm, setChecklistForm] = useState({
     label: "",
     completed: 0,
-    task_id: ""
+    task_id: "",
   });
   const [editingChecklist, setEditingChecklist] = useState(null);
   const [checklistError, setChecklistError] = useState(null);
   const [checklistSuccess, setChecklistSuccess] = useState("");
 
-  const fetchTasks = useCallback((message = "") => {
-    return api
-      .get(`/tasks/projects/${id}`)
-      .then((res) => {
-        setTasks(res.data.data || res.data);
-        if (message) {
-          setTaskSuccess(message);
-        }
-        setTaskError(null);
-      })
-      .catch((err) => {
-        setTaskError(err.message);
-        setTaskSuccess("");
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, [id]);
+  const fetchTasks = useCallback(
+    (message = "") => {
+      return api
+        .get(`/tasks/projects/${id}`)
+        .then((res) => {
+          setTasks(res.data.data || res.data);
+          if (message) {
+            setTaskSuccess(message);
+          }
+          setTaskError(null);
+        })
+        .catch((err) => {
+          setTaskError(err.message);
+          setTaskSuccess("");
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    },
+    [id],
+  );
 
   const fetchChecklists = (message = "") => {
     return api
@@ -88,7 +95,7 @@ export default function ProjectTasksPage() {
 
     formMethod(url, {
       ...taskForm,
-      project_id: id
+      project_id: id,
     })
       .then(() => fetchTasks(`Task ${actionLabel} successfully.`))
       .then(() => {
@@ -116,7 +123,11 @@ export default function ProjectTasksPage() {
   };
 
   const handleTaskEdit = (task) => {
-    setTaskForm({ name: task.name, description: task.description, status: task.status });
+    setTaskForm({
+      name: task.name,
+      description: task.description,
+      status: task.status,
+    });
     setEditingTask(task.id);
   };
 
@@ -132,9 +143,7 @@ export default function ProjectTasksPage() {
     formMethod(url, {
       ...checklistForm,
     })
-      .then(() =>
-        fetchChecklists(`Checklist ${actionLabel} successfully.`)
-      )
+      .then(() => fetchChecklists(`Checklist ${actionLabel} successfully.`))
       .then(() => {
         setChecklistForm({
           label: "",
@@ -151,7 +160,8 @@ export default function ProjectTasksPage() {
   };
 
   const handleChecklistDelete = async (id) => {
-    if (!confirm("Are you sure you want to delete this checklist item?")) return;
+    if (!confirm("Are you sure you want to delete this checklist item?"))
+      return;
 
     try {
       await api.delete(`/checklist-items/${id}`);
@@ -167,7 +177,7 @@ export default function ProjectTasksPage() {
     setChecklistForm({
       label: item.label,
       completed: item.completed,
-      task_id: item.task_id
+      task_id: item.task_id,
     });
     setEditingChecklist(item.id);
   };
@@ -180,9 +190,7 @@ export default function ProjectTasksPage() {
           <h1 className="text-3xl font-semibold tracking-tight text-slate-950 md:text-4xl">
             Tasks for project
           </h1>
-          <p className="text-sm text-slate-600">
-            Project ID: {id}
-          </p>
+          <p className="text-sm text-slate-600">Project ID: {id}</p>
         </div>
 
         <div>
@@ -303,17 +311,17 @@ export default function ProjectTasksPage() {
               )}
             </div>
           </form>
-        
-          <div className="space-y-4">
-              <div className="rounded-lg border border-slate-200 bg-white/90 p-4 shadow-sm">
-                <p className="text-sm font-semibold text-slate-950">
-                  Current tasks
-                </p>
 
-                <p className="mt-1 text-sm leading-6 text-slate-600">
-                  Select a task to edit or delete it.
-                </p>
-              </div>
+          <div className="space-y-4">
+            <div className="rounded-lg border border-slate-200 bg-white/90 p-4 shadow-sm">
+              <p className="text-sm font-semibold text-slate-950">
+                Current tasks
+              </p>
+
+              <p className="mt-1 text-sm leading-6 text-slate-600">
+                Select a task to edit or delete it.
+              </p>
+            </div>
 
             {loading ? (
               <div className="surface-card p-5 rounded-[1rem] text-sm text-slate-600">
@@ -335,7 +343,10 @@ export default function ProjectTasksPage() {
                   const taskChecklist = getChecklistForTask(task.id);
 
                   return (
-                    <div key={task.id} className="surface-card rounded-[1rem] p-5">
+                    <div
+                      key={task.id}
+                      className="surface-card rounded-[1rem] p-5"
+                    >
                       <h3 className="text-lg font-semibold text-slate-950">
                         {task.name}
                       </h3>
@@ -351,8 +362,8 @@ export default function ProjectTasksPage() {
                               task.status === "done"
                                 ? "bg-emerald-100 text-emerald-700"
                                 : task.status === "in_progress"
-                                ? "bg-amber-100 text-amber-700"
-                                : "bg-slate-100 text-slate-700"
+                                  ? "bg-amber-100 text-amber-700"
+                                  : "bg-slate-100 text-slate-700"
                             }`}
                         >
                           {task.status}
@@ -362,7 +373,7 @@ export default function ProjectTasksPage() {
                       <p className="mt-4 text-xs text-slate-500">
                         Project: {task.project?.name}
                       </p>
-                      
+
                       <div className="flex gap-2 mt-4 mb-6">
                         <button
                           onClick={() => handleTaskEdit(task)}
@@ -378,10 +389,12 @@ export default function ProjectTasksPage() {
                           Delete
                         </button>
                       </div>
-                      
+
                       {checklistError && (
                         <div className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
-                          <p className="font-semibold">This action could not be completed.</p>
+                          <p className="font-semibold">
+                            This action could not be completed.
+                          </p>
                           <p>{checklistError}</p>
                         </div>
                       )}
@@ -404,9 +417,7 @@ export default function ProjectTasksPage() {
                             readOnly
                           />
 
-                          <span className="flex-1">
-                            {item.label}
-                          </span>
+                          <span className="flex-1">{item.label}</span>
 
                           <button
                             onClick={() => handleChecklistEdit(item)}

@@ -11,58 +11,55 @@ export default function Comments({ id, type }) {
   const [commentForm, setCommentForm] = useState({
     content: "",
     commentable_id: "",
-    type: ""
+    type: "",
   });
   const [editingComment, setEditingComment] = useState(null);
   const [commentError, setCommentError] = useState(null);
   const [commentSuccess, setCommentSuccess] = useState("");
 
-  const fetchComments = useCallback((message = "") => {
-    return api
-      .get("/comments")
-      .then((res) => {
-        const filtered = Array.isArray(res.data)
-          ? res.data.filter(
-              (c) =>
-                c.commentable.type === type &&
-                c.commentable.id === id
-            )
-          : [];
+  const fetchComments = useCallback(
+    (message = "") => {
+      return api
+        .get("/comments")
+        .then((res) => {
+          const filtered = Array.isArray(res.data)
+            ? res.data.filter(
+                (c) => c.commentable.type === type && c.commentable.id === id,
+              )
+            : [];
 
-        setComments(filtered);
+          setComments(filtered);
 
-        if (message) {
-          setCommentSuccess(message);
-        }
+          if (message) {
+            setCommentSuccess(message);
+          }
 
-        setCommentError(null);
-      })
-      .catch((err) => {
-        console.error("Failed to load comments", err);
-        setComments([]);
-        setCommentError(err.message);
-        setCommentSuccess("");
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, [id, type]);
+          setCommentError(null);
+        })
+        .catch((err) => {
+          console.error("Failed to load comments", err);
+          setComments([]);
+          setCommentError(err.message);
+          setCommentSuccess("");
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    },
+    [id, type],
+  );
 
   useEffect(() => {
-  fetchComments();
-}, [fetchComments]);
+    fetchComments();
+  }, [fetchComments]);
 
   if (loading) {
     return (
-      <div className="mt-4 text-sm text-slate-500">
-        Loading comments...
-      </div>
+      <div className="mt-4 text-sm text-slate-500">Loading comments...</div>
     );
   }
 
-  const visibleComments = expanded
-    ? comments
-    : comments.slice(0, 2);
+  const visibleComments = expanded ? comments : comments.slice(0, 2);
 
   // const handleCommentSubmit = (e) => {
   //   e.preventDefault();
@@ -104,17 +101,13 @@ export default function Comments({ id, type }) {
   //   });
   //   setEditingComment(comment.id);
   // };
-  
+
   return (
     <div className="mt-5 space-y-3">
-      <h3 className="text-sm font-semibold text-slate-900">
-        Comments
-      </h3>
+      <h3 className="text-sm font-semibold text-slate-900">Comments</h3>
 
       {comments.length === 0 ? (
-        <p className="text-sm text-slate-500">
-          No comments yet.
-        </p>
+        <p className="text-sm text-slate-500">No comments yet.</p>
       ) : (
         <>
           <div className="space-y-2">
@@ -123,9 +116,7 @@ export default function Comments({ id, type }) {
                 key={comment.id}
                 className="rounded-lg border border-slate-200 bg-white/80 p-3"
               >
-                <p className="text-sm text-slate-800">
-                  {comment.content}
-                </p>
+                <p className="text-sm text-slate-800">{comment.content}</p>
 
                 <p className="mt-1 text-xs text-slate-500">
                   By {comment.user.name}
@@ -139,9 +130,7 @@ export default function Comments({ id, type }) {
               onClick={() => setExpanded(!expanded)}
               className="text-xs font-medium text-teal-700 hover:text-teal-900"
             >
-              {expanded
-                ? "Show less"
-                : `View ${comments.length - 2} more`}
+              {expanded ? "Show less" : `View ${comments.length - 2} more`}
             </button>
           )}
         </>
