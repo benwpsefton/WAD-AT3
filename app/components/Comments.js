@@ -69,9 +69,6 @@ export default function Comments({ id, type }) {
     const url = editingComment ? `/comments/${editingComment}` : "/comments";
 
     formMethod(url, commentForm)
-      .then((res) => {
-        return fetchComments(`Comment ${actionLabel} successfully.`);
-      })
       .then(() => fetchComments(`Comment ${actionLabel} successfully.`))
       .then(() => {
         setCommentForm({ content: "", commentable_id: id, commentable_type: type });
