@@ -40,6 +40,19 @@ export default function Checklists({ taskId }) {
     fetchChecklists();
   }, [fetchChecklists]);
 
+  const handleToggleCompleted = async (item) => {
+    try {
+      await api.put(`/checklist-items/${item.id}`, {
+        ...item,
+        completed: item.completed === 1 ? 0 : 1,
+      });
+
+      fetchChecklists();
+    } catch (err) {
+      setChecklistError(err.message);
+    }
+  };
+
   const handleChecklistSubmit = (e) => {
     if (e) e.preventDefault();
 
@@ -109,7 +122,11 @@ export default function Checklists({ taskId }) {
 
       {checklists.map((item) => (
         <div key={item.id} className="flex items-center gap-2 text-sm">
-          <input type="checkbox" checked={item.completed === 1} readOnly />
+          <input
+            type="checkbox"
+            checked={item.completed === 1}
+            onChange={() => handleToggleCompleted(item)}
+          />
 
           <span className="flex-1">{item.label}</span>
 
