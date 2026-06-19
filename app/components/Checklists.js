@@ -37,11 +37,7 @@ export default function Checklists({ taskId }) {
 
   useEffect(() => {
     fetchChecklists();
-  }, []);
-
-  const getChecklistForTask = (taskId) => {
-    return checklists.filter((item) => item.task_id === taskId);
-  };
+  }, [taskId]);
 
   const handleChecklistSubmit = (e) => {
     if (e) e.preventDefault();
@@ -110,58 +106,50 @@ export default function Checklists({ taskId }) {
         </div>
       )}
 
-      {tasks.map((task) => {
-        const taskChecklist = getChecklistForTask(task.id);
+      {checklists.map((item) => (
+        <div key={item.id} className="flex items-center gap-2 text-sm">
+          <input type="checkbox" checked={item.completed === 1} readOnly />
 
-        {
-          taskChecklist.map((item) => (
-            <div key={item.id} className="flex items-center gap-2 text-sm">
-              <input type="checkbox" checked={item.completed === 1} readOnly />
-
-              <span className="flex-1">{item.label}</span>
-
-              <button
-                onClick={() => handleChecklistEdit(item)}
-                className="text-xs text-slate-600"
-              >
-                Edit
-              </button>
-
-              <button
-                onClick={() => handleChecklistDelete(item.id)}
-                className="text-xs text-rose-600"
-              >
-                Delete
-              </button>
-            </div>
-          ));
-        }
-
-        <div className="mt-4 flex gap-2">
-          <input
-            type="text"
-            placeholder="New checklist item"
-            value={checklistForm.task_id === task.id ? checklistForm.label : ""}
-            onChange={(e) =>
-              setChecklistForm((prev) => ({
-                ...prev,
-                label: e.target.value,
-                task_id: task.id,
-                completed: 0,
-              }))
-            }
-            className="flex-1 rounded border border-slate-300 p-1 text-sm"
-          />
+          <span className="flex-1">{item.label}</span>
 
           <button
-            type="button"
-            onClick={handleChecklistSubmit}
-            className="button-secondary px-2 text-sm"
+            onClick={() => handleChecklistEdit(item)}
+            className="text-xs text-slate-600"
           >
-            {editingChecklist ? "Update" : "Add"}
+            Edit
           </button>
-        </div>;
-      })}
+
+          <button
+            onClick={() => handleChecklistDelete(item.id)}
+            className="text-xs text-rose-600"
+          >
+            Delete
+          </button>
+        </div>
+      ))}
+
+      <div className="mt-4 flex gap-2">
+        <input
+          type="text"
+          placeholder="New checklist item"
+          value={checklistForm.label}
+          onChange={(e) =>
+            setChecklistForm((prev) => ({
+              ...prev,
+              label: e.target.value,
+            }))
+          }
+          className="flex-1 rounded border border-slate-300 p-1 text-sm"
+        />
+
+        <button
+          type="button"
+          onClick={handleChecklistSubmit}
+          className="button-secondary px-2 text-sm"
+        >
+          {editingChecklist ? "Update" : "Add"}
+        </button>
+      </div>
     </section>
   );
 }
