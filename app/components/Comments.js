@@ -70,7 +70,6 @@ export default function Comments({ id, type }) {
 
     formMethod(url, commentForm)
       .then((res) => {
-        console.log("CREATE RESPONSE:", res.data);
         return fetchComments(`Comment ${actionLabel} successfully.`);
       })
       .then(() => fetchComments(`Comment ${actionLabel} successfully.`))
