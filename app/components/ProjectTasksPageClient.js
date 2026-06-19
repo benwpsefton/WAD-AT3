@@ -7,6 +7,7 @@ import ProtectedPage from "@/app/components/ProtectedPage";
 import Link from "next/link";
 import Comments from "@/app/components/Comments";
 import { useCallback } from "react";
+import Checklists from "./Checklists";
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -23,15 +24,6 @@ export default function ProjectTasksPage() {
   const [editingTask, setEditingTask] = useState(null);
   const [taskError, setTaskError] = useState(null);
   const [taskSuccess, setTaskSuccess] = useState("");
-  const [checklists, setChecklists] = useState([]);
-  const [checklistForm, setChecklistForm] = useState({
-    label: "",
-    completed: 0,
-    task_id: "",
-  });
-  const [editingChecklist, setEditingChecklist] = useState(null);
-  const [checklistError, setChecklistError] = useState(null);
-  const [checklistSuccess, setChecklistSuccess] = useState("");
 
   const fetchTasks = useCallback(
     (message = "") => {
@@ -55,36 +47,9 @@ export default function ProjectTasksPage() {
     [id],
   );
 
-  const fetchChecklists = (message = "") => {
-    return api
-      .get(`/checklist-items`)
-      .then((res) => {
-        setChecklists(res.data.data || res.data);
-        if (message) {
-          setChecklistSuccess(message);
-        }
-        setChecklistError(null);
-      })
-      .catch((err) => {
-        setChecklistError(err.message);
-        setChecklistSuccess("");
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
-
   useEffect(() => {
     fetchTasks();
   }, [fetchTasks]);
-
-  useEffect(() => {
-    fetchChecklists();
-  }, []);
-
-  const getChecklistForTask = (taskId) => {
-    return checklists.filter((item) => item.task_id === taskId);
-  };
 
   const handleTaskSubmit = (e) => {
     e.preventDefault();
@@ -129,57 +94,6 @@ export default function ProjectTasksPage() {
       status: task.status,
     });
     setEditingTask(task.id);
-  };
-
-  const handleChecklistSubmit = (e) => {
-    if (e) e.preventDefault();
-
-    const formMethod = editingChecklist ? api.put : api.post;
-    const actionLabel = editingChecklist ? "updated" : "created";
-    const url = editingChecklist
-      ? `/checklist-items/${editingChecklist}`
-      : "/checklist-items";
-
-    formMethod(url, {
-      ...checklistForm,
-    })
-      .then(() => fetchChecklists(`Checklist ${actionLabel} successfully.`))
-      .then(() => {
-        setChecklistForm({
-          label: "",
-          completed: 0,
-          task_id: "",
-        });
-
-        setEditingChecklist(null);
-      })
-      .catch((err) => {
-        setChecklistError(err.message);
-        setChecklistSuccess("");
-      });
-  };
-
-  const handleChecklistDelete = async (id) => {
-    if (!confirm("Are you sure you want to delete this checklist item?"))
-      return;
-
-    try {
-      await api.delete(`/checklist-items/${id}`);
-      setChecklists((prev) => prev.filter((c) => c.id !== id));
-      await fetchChecklists("Checklist deleted successfully.");
-    } catch (err) {
-      setChecklistError(err.message);
-      setChecklistSuccess("");
-    }
-  };
-
-  const handleChecklistEdit = (item) => {
-    setChecklistForm({
-      label: item.label,
-      completed: item.completed,
-      task_id: item.task_id,
-    });
-    setEditingChecklist(item.id);
   };
 
   return (
@@ -340,135 +254,59 @@ export default function ProjectTasksPage() {
             ) : (
               <div className="grid gap-4 md:grid-cols-2">
                 {tasks.map((task) => {
-                  const taskChecklist = getChecklistForTask(task.id);
+                  <div
+                    key={task.id}
+                    className="surface-card rounded-[1rem] p-5"
+                  >
+                    <h3 className="text-lg font-semibold text-slate-950">
+                      {task.name}
+                    </h3>
 
-                  return (
-                    <div
-                      key={task.id}
-                      className="surface-card rounded-[1rem] p-5"
-                    >
-                      <h3 className="text-lg font-semibold text-slate-950">
-                        {task.name}
-                      </h3>
+                    <p className="mt-2 text-sm leading-6 text-slate-600">
+                      {task.description}
+                    </p>
 
-                      <p className="mt-2 text-sm leading-6 text-slate-600">
-                        {task.description}
-                      </p>
-
-                      <div className="mt-4">
-                        <span
-                          className={`inline-block rounded-full px-3 py-1 text-xs font-medium
-                            ${
-                              task.status === "done"
-                                ? "bg-emerald-100 text-emerald-700"
-                                : task.status === "in_progress"
-                                  ? "bg-amber-100 text-amber-700"
-                                  : "bg-slate-100 text-slate-700"
-                            }`}
-                        >
-                          {task.status}
-                        </span>
-                      </div>
-
-                      <p className="mt-4 text-xs text-slate-500">
-                        Project: {task.project?.name}
-                      </p>
-
-                      <div className="flex gap-2 mt-4 mb-6">
-                        <button
-                          onClick={() => handleTaskEdit(task)}
-                          className="button-secondary px-3 py-2 text-sm hover:border-slate-400 hover:bg-white"
-                        >
-                          Edit
-                        </button>
-
-                        <button
-                          onClick={() => handleTaskDelete(task.id)}
-                          className="rounded-[0.75rem] bg-rose-100 px-3 py-2 text-sm font-semibold text-rose-800 hover:bg-rose-200"
-                        >
-                          Delete
-                        </button>
-                      </div>
-
-                      {checklistError && (
-                        <div className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
-                          <p className="font-semibold">
-                            This action could not be completed.
-                          </p>
-                          <p>{checklistError}</p>
-                        </div>
-                      )}
-
-                      {!checklistError && checklistSuccess && (
-                        <div className="rounded-lg border border-teal-200 bg-teal-50 px-4 py-3 mb-4 text-sm text-teal-900">
-                          <p className="font-semibold">Status</p>
-                          <p>{checklistSuccess}</p>
-                        </div>
-                      )}
-
-                      {taskChecklist.map((item) => (
-                        <div
-                          key={item.id}
-                          className="flex items-center gap-2 text-sm"
-                        >
-                          <input
-                            type="checkbox"
-                            checked={item.completed === 1}
-                            readOnly
-                          />
-
-                          <span className="flex-1">{item.label}</span>
-
-                          <button
-                            onClick={() => handleChecklistEdit(item)}
-                            className="text-xs text-slate-600"
-                          >
-                            Edit
-                          </button>
-
-                          <button
-                            onClick={() => handleChecklistDelete(item.id)}
-                            className="text-xs text-rose-600"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      ))}
-
-                      <div className="mt-4 flex gap-2">
-                        <input
-                          type="text"
-                          placeholder="New checklist item"
-                          value={
-                            checklistForm.task_id === task.id
-                              ? checklistForm.label
-                              : ""
-                          }
-                          onChange={(e) =>
-                            setChecklistForm((prev) => ({
-                              ...prev,
-                              label: e.target.value,
-                              task_id: task.id,
-                              completed: 0,
-                            }))
-                          }
-                          className="flex-1 rounded border border-slate-300 p-1 text-sm"
-                        />
-
-                        <button
-                          type="button"
-                          onClick={handleChecklistSubmit}
-                          className="button-secondary px-2 text-sm"
-                        >
-                          {editingChecklist ? "Update" : "Add"}
-                        </button>
-                      </div>
-
-                      <div className="mt-6 gap-4">
-                        <Comments id={task.id} type="Task" />
-                      </div>
+                    <div className="mt-4">
+                      <span
+                        className={`inline-block rounded-full px-3 py-1 text-xs font-medium
+                          ${
+                            task.status === "done"
+                              ? "bg-emerald-100 text-emerald-700"
+                              : task.status === "in_progress"
+                                ? "bg-amber-100 text-amber-700"
+                                : "bg-slate-100 text-slate-700"
+                          }`}
+                      >
+                        {task.status}
+                      </span>
                     </div>
-                  );
+
+                    <p className="mt-4 text-xs text-slate-500">
+                      Project: {task.project?.name}
+                    </p>
+
+                    <div className="flex gap-2 mt-4 mb-6">
+                      <button
+                        onClick={() => handleTaskEdit(task)}
+                        className="button-secondary px-3 py-2 text-sm hover:border-slate-400 hover:bg-white"
+                      >
+                        Edit
+                      </button>
+
+                      <button
+                        onClick={() => handleTaskDelete(task.id)}
+                        className="rounded-[0.75rem] bg-rose-100 px-3 py-2 text-sm font-semibold text-rose-800 hover:bg-rose-200"
+                      >
+                        Delete
+                      </button>
+                    </div>
+
+                    <Checklists taskId={task.id} />
+
+                    <div className="mt-6 gap-4">
+                      <Comments id={task.id} type="Task" />
+                    </div>
+                  </div>;
                 })}
               </div>
             )}
