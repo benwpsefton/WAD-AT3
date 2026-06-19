@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import Comments from "./Comments";
 
+
 export default function CommentsModal({ isOpen, onClose, id, type }) {
   useEffect(() => {
     if (!isOpen) return;
@@ -15,24 +16,47 @@ export default function CommentsModal({ isOpen, onClose, id, type }) {
     return () => window.removeEventListener("keydown", handleEsc);
   }, [isOpen, onClose]);
 
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
+  const handleBackdropClick = (e) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="w-full max-w-2xl rounded-xl bg-white p-6 shadow-lg">
-        
-        <div className="flex items-center justify-between mb-4">
+    <div
+      onClick={handleBackdropClick}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+    >
+      <div className="relative w-full max-w-2xl rounded-xl bg-white shadow-xl">
+        <div className="flex items-center justify-between border-b border-slate-200 p-4">
           <h2 className="text-lg font-semibold">Comments</h2>
 
           <button
             onClick={onClose}
-            className="text-sm text-slate-600 hover:text-black"
+            className="rounded-md px-2 py-1 text-lg leading-none text-slate-600 hover:bg-slate-100 hover:text-black"
+            aria-label="Close modal"
           >
-            Close
+            X
           </button>
         </div>
 
-        <Comments id={id} type={type} />
+        <div className="max-h-[70vh] overflow-y-auto p-4">
+          <Comments id={id} type={type} />
+        </div>
       </div>
     </div>
   );
