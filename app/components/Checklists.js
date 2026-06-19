@@ -4,6 +4,18 @@ import { useEffect, useState } from "react";
 import api from "@/lib/api";
 
 export default function Checklists({ taskId }) {
+  const { id } = useParams();
+
+  const [checklists, setChecklists] = useState([]);
+  const [checklistForm, setChecklistForm] = useState({
+    label: "",
+    completed: 0,
+    task_id: taskId,
+  });
+  const [editingChecklist, setEditingChecklist] = useState(null);
+  const [checklistError, setChecklistError] = useState(null);
+  const [checklistSuccess, setChecklistSuccess] = useState("");
+
   const fetchChecklists = (message = "") => {
     return api
       .get(`/checklist-items`)
@@ -81,4 +93,75 @@ export default function Checklists({ taskId }) {
     });
     setEditingChecklist(item.id);
   };
+
+  return (
+    <section>
+      {checklistError && (
+        <div className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
+          <p className="font-semibold">This action could not be completed.</p>
+          <p>{checklistError}</p>
+        </div>
+      )}
+
+      {!checklistError && checklistSuccess && (
+        <div className="rounded-lg border border-teal-200 bg-teal-50 px-4 py-3 mb-4 text-sm text-teal-900">
+          <p className="font-semibold">Status</p>
+          <p>{checklistSuccess}</p>
+        </div>
+      )}
+
+      {tasks.map((task) => {
+        const taskChecklist = getChecklistForTask(task.id);
+
+        {
+          taskChecklist.map((item) => (
+            <div key={item.id} className="flex items-center gap-2 text-sm">
+              <input type="checkbox" checked={item.completed === 1} readOnly />
+
+              <span className="flex-1">{item.label}</span>
+
+              <button
+                onClick={() => handleChecklistEdit(item)}
+                className="text-xs text-slate-600"
+              >
+                Edit
+              </button>
+
+              <button
+                onClick={() => handleChecklistDelete(item.id)}
+                className="text-xs text-rose-600"
+              >
+                Delete
+              </button>
+            </div>
+          ));
+        }
+
+        <div className="mt-4 flex gap-2">
+          <input
+            type="text"
+            placeholder="New checklist item"
+            value={checklistForm.task_id === task.id ? checklistForm.label : ""}
+            onChange={(e) =>
+              setChecklistForm((prev) => ({
+                ...prev,
+                label: e.target.value,
+                task_id: task.id,
+                completed: 0,
+              }))
+            }
+            className="flex-1 rounded border border-slate-300 p-1 text-sm"
+          />
+
+          <button
+            type="button"
+            onClick={handleChecklistSubmit}
+            className="button-secondary px-2 text-sm"
+          >
+            {editingChecklist ? "Update" : "Add"}
+          </button>
+        </div>;
+      })}
+    </section>
+  );
 }
