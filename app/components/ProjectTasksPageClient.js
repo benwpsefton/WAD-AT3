@@ -8,6 +8,7 @@ import Link from "next/link";
 import Comments from "@/app/components/Comments";
 import { useCallback } from "react";
 import Checklists from "./Checklists";
+import CommentsModal from "./CommentsModal";
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -24,6 +25,7 @@ export default function ProjectTasksPage() {
   const [editingTask, setEditingTask] = useState(null);
   const [taskError, setTaskError] = useState(null);
   const [taskSuccess, setTaskSuccess] = useState("");
+  const [activeCommentTask, setActiveCommentTask] = useState(null);
 
   const fetchTasks = useCallback(
     (message = "") => {
@@ -304,9 +306,16 @@ export default function ProjectTasksPage() {
                       
                       <Checklists taskId={task.id} />
 
-                      <div className="mt-6 gap-4">
+                      <button
+                        onClick={() => setActiveCommentTask(task.id)}
+                        className="text-sm text-teal-700 hover:underline mt-3"
+                      >
+                        View comments
+                      </button>
+
+                      {/* <div className="mt-6 gap-4">
                         <Comments id={task.id} type="Task" />
-                      </div>
+                      </div> */}
                     </div>
                   );
                 })}
@@ -315,6 +324,13 @@ export default function ProjectTasksPage() {
           </div>
         </div>
       </section>
+
+      <CommentsModal
+        isOpen={!!activeCommentTask}
+        id={activeCommentTask}
+        type="Task"
+        onClose={() => setActiveCommentTask(null)}
+      />
     </ProtectedPage>
   );
 }
