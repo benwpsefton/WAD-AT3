@@ -4,8 +4,6 @@ import { useEffect, useState } from "react";
 import api from "@/lib/api";
 
 export default function Checklists({ taskId }) {
-  const { id } = useParams();
-
   const [checklists, setChecklists] = useState([]);
   const [checklistForm, setChecklistForm] = useState({
     label: "",
@@ -20,7 +18,14 @@ export default function Checklists({ taskId }) {
     return api
       .get(`/checklist-items`)
       .then((res) => {
-        setChecklists(res.data.data || res.data);
+        const allItems = res.data.data || res.data
+
+        setChecklists(
+          allItems.filter(
+            (item) => item.task_id === taskId
+          )
+        );
+        
         if (message) {
           setChecklistSuccess(message);
         }
@@ -30,9 +35,6 @@ export default function Checklists({ taskId }) {
         setChecklistError(err.message);
         setChecklistSuccess("");
       })
-      .finally(() => {
-        setLoading(false);
-      });
   };
 
   useEffect(() => {

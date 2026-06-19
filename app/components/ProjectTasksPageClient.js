@@ -254,59 +254,61 @@ export default function ProjectTasksPage() {
             ) : (
               <div className="grid gap-4 md:grid-cols-2">
                 {tasks.map((task) => {
-                  <div
-                    key={task.id}
-                    className="surface-card rounded-[1rem] p-5"
-                  >
-                    <h3 className="text-lg font-semibold text-slate-950">
-                      {task.name}
-                    </h3>
+                  return (
+                    <div
+                      key={task.id}
+                      className="surface-card rounded-[1rem] p-5"
+                    >
+                      <h3 className="text-lg font-semibold text-slate-950">
+                        {task.name}
+                      </h3>
 
-                    <p className="mt-2 text-sm leading-6 text-slate-600">
-                      {task.description}
-                    </p>
+                      <p className="mt-2 text-sm leading-6 text-slate-600">
+                        {task.description}
+                      </p>
 
-                    <div className="mt-4">
-                      <span
-                        className={`inline-block rounded-full px-3 py-1 text-xs font-medium
-                          ${
-                            task.status === "done"
-                              ? "bg-emerald-100 text-emerald-700"
-                              : task.status === "in_progress"
-                                ? "bg-amber-100 text-amber-700"
-                                : "bg-slate-100 text-slate-700"
-                          }`}
-                      >
-                        {task.status}
-                      </span>
+                      <div className="mt-4">
+                        <span
+                          className={`inline-block rounded-full px-3 py-1 text-xs font-medium
+                            ${
+                              task.status === "done"
+                                ? "bg-emerald-100 text-emerald-700"
+                                : task.status === "in_progress"
+                                  ? "bg-amber-100 text-amber-700"
+                                  : "bg-slate-100 text-slate-700"
+                            }`}
+                        >
+                          {task.status}
+                        </span>
+                      </div>
+
+                      <p className="mt-4 text-xs text-slate-500">
+                        Project: {task.project?.name}
+                      </p>
+
+                      <div className="flex gap-2 mt-4 mb-6">
+                        <button
+                          onClick={() => handleTaskEdit(task)}
+                          className="button-secondary px-3 py-2 text-sm hover:border-slate-400 hover:bg-white"
+                        >
+                          Edit
+                        </button>
+
+                        <button
+                          onClick={() => handleTaskDelete(task.id)}
+                          className="rounded-[0.75rem] bg-rose-100 px-3 py-2 text-sm font-semibold text-rose-800 hover:bg-rose-200"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                      
+                      <Checklists taskId={task.id} />
+
+                      <div className="mt-6 gap-4">
+                        <Comments id={task.id} type="Task" />
+                      </div>
                     </div>
-
-                    <p className="mt-4 text-xs text-slate-500">
-                      Project: {task.project?.name}
-                    </p>
-
-                    <div className="flex gap-2 mt-4 mb-6">
-                      <button
-                        onClick={() => handleTaskEdit(task)}
-                        className="button-secondary px-3 py-2 text-sm hover:border-slate-400 hover:bg-white"
-                      >
-                        Edit
-                      </button>
-
-                      <button
-                        onClick={() => handleTaskDelete(task.id)}
-                        className="rounded-[0.75rem] bg-rose-100 px-3 py-2 text-sm font-semibold text-rose-800 hover:bg-rose-200"
-                      >
-                        Delete
-                      </button>
-                    </div>
-
-                    <Checklists taskId={task.id} />
-
-                    <div className="mt-6 gap-4">
-                      <Comments id={task.id} type="Task" />
-                    </div>
-                  </div>;
+                  );
                 })}
               </div>
             )}
