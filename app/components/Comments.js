@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import api from "@/lib/api";
 import { useCallback } from "react";
 
+const typeToRouteSegment = (type) => `${type.toLowerCase()}s`;
+
 export default function Comments({ id, type }) {
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,14 +21,12 @@ export default function Comments({ id, type }) {
 
   const fetchComments = useCallback(
     (message = "") => {
+      const url = `/comments/${typeToRouteSegment(type)}/${id}`;
+
       return api
-        .get("/comments")
+        .get(url)
         .then((res) => {
-          const filtered = Array.isArray(res.data)
-            ? res.data.filter(
-                (c) => c.commentable.type === type && c.commentable.id === id,
-              )
-            : [];
+          const filtered = Array.isArray(res.data) ? res.data : [];
 
           setComments(filtered);
 
@@ -68,11 +68,11 @@ export default function Comments({ id, type }) {
     const actionLabel = editingComment ? "updated" : "created";
     const url = editingComment ? `/comments/${editingComment}` : "/comments";
 
-    console.log("COMMENT PAYLOAD:", commentForm);
-    console.log("TYPE:", type);
-    console.log("ID:", id);
-
     formMethod(url, commentForm)
+      .then((res) => {
+        console.log("CREATE RESPONSE:", res.data);
+        return fetchComments(`Comment ${actionLabel} successfully.`);
+      })
       .then(() => fetchComments(`Comment ${actionLabel} successfully.`))
       .then(() => {
         setCommentForm({ content: "", commentable_id: id, commentable_type: type });
