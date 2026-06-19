@@ -303,7 +303,7 @@ export default function ProjectTasksPage() {
                           Delete
                         </button>
                       </div>
-                      
+
                       <Checklists taskId={task.id} />
 
                       <button

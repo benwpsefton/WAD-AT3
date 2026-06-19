@@ -3,7 +3,6 @@
 import { useEffect } from "react";
 import Comments from "./Comments";
 
-
 export default function CommentsModal({ isOpen, onClose, id, type }) {
   useEffect(() => {
     if (!isOpen) return;

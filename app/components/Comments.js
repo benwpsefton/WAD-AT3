@@ -71,7 +71,11 @@ export default function Comments({ id, type }) {
     formMethod(url, commentForm)
       .then(() => fetchComments(`Comment ${actionLabel} successfully.`))
       .then(() => {
-        setCommentForm({ content: "", commentable_id: id, commentable_type: type });
+        setCommentForm({
+          content: "",
+          commentable_id: id,
+          commentable_type: type,
+        });
         setEditingComment(null);
       })
       .catch((err) => {
@@ -97,7 +101,7 @@ export default function Comments({ id, type }) {
     setCommentForm({
       content: comment.content,
       commentable_id: comment.commentable?.id,
-      commentable_type: comment.commentable?.type
+      commentable_type: comment.commentable?.type,
     });
     setEditingComment(comment.id);
   };
@@ -164,10 +168,7 @@ export default function Comments({ id, type }) {
         </>
       )}
 
-      <form
-        onSubmit={handleCommentSubmit}
-        className="mt-4 flex gap-2"
-      >
+      <form onSubmit={handleCommentSubmit} className="mt-4 flex gap-2">
         <input
           type="text"
           value={commentForm.content}
@@ -182,10 +183,7 @@ export default function Comments({ id, type }) {
           required
         />
 
-        <button
-          type="submit"
-          className="button-secondary px-3 text-sm"
-        >
+        <button type="submit" className="button-secondary px-3 text-sm">
           {editingComment ? "Update" : "Add"}
         </button>
 
