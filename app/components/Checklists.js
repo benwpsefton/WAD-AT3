@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import api from "@/lib/api";
 
 export default function Checklists({ taskId }) {
@@ -14,32 +14,31 @@ export default function Checklists({ taskId }) {
   const [checklistError, setChecklistError] = useState(null);
   const [checklistSuccess, setChecklistSuccess] = useState("");
 
-  const fetchChecklists = (message = "") => {
-    return api
-      .get(`/checklist-items`)
-      .then((res) => {
-        const allItems = res.data.data || res.data
+  const fetchChecklists = useCallback(
+    (message = "") => {
+      return api
+        .get(`/checklist-items`)
+        .then((res) => {
+          const allItems = res.data.data || res.data;
 
-        setChecklists(
-          allItems.filter(
-            (item) => item.task_id === taskId
-          )
-        );
-        
-        if (message) {
-          setChecklistSuccess(message);
-        }
-        setChecklistError(null);
-      })
-      .catch((err) => {
-        setChecklistError(err.message);
-        setChecklistSuccess("");
-      })
-  };
+          setChecklists(allItems.filter((item) => item.task_id === taskId));
+
+          if (message) {
+            setChecklistSuccess(message);
+          }
+          setChecklistError(null);
+        })
+        .catch((err) => {
+          setChecklistError(err.message);
+          setChecklistSuccess("");
+        });
+    },
+    [taskId],
+  );
 
   useEffect(() => {
     fetchChecklists();
-  }, [taskId]);
+  }, [fetchChecklists]);
 
   const handleChecklistSubmit = (e) => {
     if (e) e.preventDefault();
